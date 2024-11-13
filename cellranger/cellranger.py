@@ -1,7 +1,7 @@
 """
 
   Hua Sun
-  2024-08-30 v2
+  2024-08-30 v0.2
 
 """
 
@@ -13,10 +13,9 @@ import pandas as pd
 
 # collect input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--cluster', action='store_true', default=False, help='use it in server')
-parser.add_argument('-p', '--pipeline', type=str, default='cr', required=True, help='pipeline')
+parser.add_argument('-p', '--pipeline', type=str, default='cr', help='pipeline')
 
-parser.add_argument('-f', '--fq_dir', type=str, default='', help='10x fastq directory')
+parser.add_argument('-f', '--fdir', type=str, default='', help='10x fastq directory')
 parser.add_argument('-n', '--name', type=str, default='name', help='name for output')
 parser.add_argument('-r', '--ref', type=str, default='mm10', help='reference')
 
@@ -30,8 +29,6 @@ args = parser.parse_args()
 
 
 def Main():
-    cluster = args.cluster
-
     path = os.path.dirname(__file__)
     f_config = f'{path}/config.ini'
     src = f'{path}/src'
@@ -52,7 +49,7 @@ def Main():
     if args.table != '':
         CallSeqCount_MultipleSamples(f_bsub, f_config, script, args.table, args.outdir)
     else:
-        CallSeqCount_SingleSample(cluster, f_bsub, f_config, script, args.ref, args.name, args.fq_dir, args.outdir)
+        CallSeqCount_SingleSample(f_bsub, f_config, script, args.ref, args.name, args.fdir, args.outdir)
     
 
     
