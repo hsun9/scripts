@@ -47,9 +47,9 @@ def Main():
     CheckFile('script', script)
 
     if args.table != '':
-        CallSeqCount_MultipleSamples(f_bsub, f_config, script, args.table, args.outdir)
+        CallSeqCount_MultipleSamples(f_bsub, args.pipeline, f_config, script, args.table, args.outdir)
     else:
-        CallSeqCount_SingleSample(f_bsub, f_config, script, args.ref, args.name, args.fdir, args.outdir)
+        CallSeqCount_SingleSample(f_bsub, args.pipeline, f_config, script, args.ref, args.name, args.fdir, args.outdir)
     
 
     
@@ -91,23 +91,19 @@ def SetScript(pipeline, src):
 
 
 ## CallSeqCount_SingleSample
-def CallSeqCount_SingleSample(cluster, f_bsub, f_config, script, ref, name, fq_dir, outdir):
+def CallSeqCount_SingleSample(f_bsub, pipeline, f_config, script, ref, name, fq_dir, outdir):
 
     if outdir == '':
         outdir = '.'
 
-    cmd = f'bash {script} -C {f_config} -R local -G {ref} -F {fq_dir} -N {name} -O {outdir}'
-    # 'cluster' mode
-    if cluster:
-        cmd = f'sh {f_bsub} 64 16 scrna_{name} bash {script} -C {f_config} -R local -G {ref} -F {fq_dir} -N {name} -O {outdir}'
-        
+    cmd = f'sh {f_bsub} 64 16 scrna_{name}_{pipeline} bash {script} -C {f_config} -R local -G {ref} -F {fq_dir} -N {name} -O {outdir}'
     os.system(cmd)
 
 
 
 
 ## CallSeqCount_MultipleSamples
-def CallSeqCount_MultipleSamples(f_bsub, f_config, script, f_table, outdir):
+def CallSeqCount_MultipleSamples(f_bsub, pipeline, f_config, script, f_table, outdir):
 
     info = pd.read_csv(f_table, sep='\t', names=['ref', 'name', 'fq_dir'])
 
@@ -119,7 +115,7 @@ def CallSeqCount_MultipleSamples(f_bsub, f_config, script, f_table, outdir):
         
         print(ref, name, fq_dir)
 
-        cmd = f'sh {f_bsub} 64 16 scrna_{name} bash {script} -C {f_config} -R local -G {ref} -F {fq_dir} -N {name} -O {outdir}'
+        cmd = f'sh {f_bsub} 64 16 scrna_{name}_{pipeline} bash {script} -C {f_config} -R local -G {ref} -F {fq_dir} -N {name} -O {outdir}'
         os.system(cmd)
 
 
